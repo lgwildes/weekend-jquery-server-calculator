@@ -3,6 +3,7 @@ console.log('in client.js');
 $(document).ready(onReady);
 
 let operator = '';
+let result = '';
 
 function onReady() {
     console.log(`let's do some math! 🤓`)
@@ -10,6 +11,7 @@ function onReady() {
 //***TODO create loadPreviousCalculations function and call it onReady.***//
 
     $('#calculatorForm').on('submit', calculate,)
+    
 
     //event handlers for each mathematical operator
     $('#add').on('click', addOperator)
@@ -18,6 +20,8 @@ function onReady() {
     $('#divide').on('click', divideOperator)
 
 }
+
+
 // these functions set 'operator' to whatever button was clicked
 function addOperator() {
     operator = '+'
@@ -66,15 +70,24 @@ function calculate(evt){
             console.log('POST /calculate error', err);
     });
 
+    getCalculation()
     // render() 
-
-
-
-
 }
 
-//TODO 
-// function render() {
+function getCalculation(){
+    $.ajax({
+        url:'/calculate',
+        method: 'GET'
+    })
+    .then(response => {             //response is my object {input1: , operator: , input2: , result: }
+        console.log('GET /calculate', response);
+        result = response;
+        console.log('result to append is', response)
+        let calculatedObject = response
 
-//     $('#results').append(`result`)
-// }
+        console.log('testing response properties', calculatedObject.input1)
+    })
+    
+}
+
+
