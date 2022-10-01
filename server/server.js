@@ -62,7 +62,11 @@ app.get('/calculate', (req, res) => {
   res.send(resultToSend);
 })
 
+app.get('/allEquations', (req, res) => {
+  console.log('Client wants all previous equations');
 
+  res.send(result);
+})
 
 
 // calculate functions for each operator TESTED AND WORK

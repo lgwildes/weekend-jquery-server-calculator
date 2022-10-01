@@ -2,15 +2,23 @@ console.log('in client.js');
 
 $(document).ready(onReady);
 
+//this variable is set to whichever button was clicked 
 let operator = '';
-let result = '';
+
+//These are created from the GET response object properties and appended to DOM 
+let answer = '';
+let input1Append = 0;
+let input2Append = 0;
+let operatorAppend = '';
+let allEquations = [];
 
 function onReady() {
     console.log(`let's do some math! 🤓`)
 
 //***TODO create loadPreviousCalculations function and call it onReady.***//
 
-    $('#calculatorForm').on('submit', calculate,)
+    $('#calculatorForm').on('submit', calculate)
+    $('#clear').on('click', clear)
     
 
     //event handlers for each mathematical operator
@@ -18,6 +26,8 @@ function onReady() {
     $('#subtract').on('click', subtractOperator)
     $('#multiply').on('click', multiplyOperator)
     $('#divide').on('click', divideOperator)
+
+    loadPreviousEquations();
 
 }
 
@@ -81,13 +91,54 @@ function getCalculation(){
     })
     .then(response => {             //response is my object {input1: , operator: , input2: , result: }
         console.log('GET /calculate', response);
-        result = response;
-        console.log('result to append is', response)
-        let calculatedObject = response
-
-        console.log('testing response properties', calculatedObject.input1)
+        answer = response.result;
+        input1Append = response.input1;
+        input2Append = response.input2;
+        operatorAppend = response.operator;
+       
+        render();
     })
+    .catch(err => {
+        console.log('GET /index-html error', err);
+    })
+
+}
+
+function render() {
+   
+    $('#results').empty();
+    $('#results').append(`<h2>${answer}</h2>`)
+
+    $('#calculations').append(`
+        <li>${input1Append} ${operatorAppend} ${input2Append} = ${answer}</li>
+    `)
+}
+
+function clear() {
+    $('#firstInput').val('') 
+    $('#secondInput').val('') 
     
 }
 
+function loadPreviousEquations() {
+    //get array of all previous equaltions from server
+    $.ajax({
+        url:'/allEquations',
+        method: 'GET'
+    })
+    .then(response =>{
+        console.log('here are all equations', response);
+        allEquations = response;
+        console.log('all equations is', allEquations)
 
+        //object {input1: , operator: , input2: , result: }
+        for(equation of allEquations){
+            $('#calculations').append(`
+            <li>${equation.input1} ${equation.operator} ${equation.input2} = ${equation.result}</li>
+        `)
+        }
+    })
+    .catch(err => {
+        console.log('GET /index-html error', err);
+    })
+}
